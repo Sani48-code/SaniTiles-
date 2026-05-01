@@ -45,11 +45,11 @@ export default function TileCard({ tile }: TileCardProps) {
       {/* Content */}
       <div className="flex flex-col flex-1 p-4">
         <Link href={`/tile/${tile.id}`}>
-          <h3 className="font-semibold text-sm leading-snug line-clamp-1 group-hover:text-primary transition-colors mb-1">
+          <h3 className="font-semibold text-base leading-snug line-clamp-1 group-hover:text-primary transition-colors mb-1">
             {tile.title}
           </h3>
         </Link>
-        <p className="text-xs text-muted-foreground line-clamp-1 mb-3">
+        <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
           {tile.creator}
         </p>
 
@@ -58,15 +58,15 @@ export default function TileCard({ tile }: TileCardProps) {
           <span className="text-lg font-bold text-primary">
             {tile.currency}&nbsp;${tile.price}
           </span>
-          <span className="text-xs text-muted-foreground">per m²</span>
+          <span className="text-sm text-muted-foreground">per m²</span>
         </div>
 
         {/* View Details button */}
         <Link
           href={`/tile/${tile.id}`}
           className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "w-full justify-center text-xs border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground transition-colors"
+            buttonVariants({ variant: "outline" }),
+            "w-full justify-center h-9 text-sm border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground transition-colors"
           )}
         >
           View Details

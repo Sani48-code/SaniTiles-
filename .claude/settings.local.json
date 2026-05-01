@@ -9,7 +9,10 @@
       "Bash(npm run *)",
       "Bash(node -e \"const p=require\\('./node_modules/better-auth/package.json'\\);console.log\\(p.version\\)\")",
       "Bash(node -e \"const p=require\\('./node_modules/framer-motion/package.json'\\);console.log\\(p.version\\)\")",
-      "Bash(node -e \"const p=require\\('./node_modules/react-hook-form/package.json'\\);console.log\\(p.version\\)\")"
+      "Bash(node -e \"const p=require\\('./node_modules/react-hook-form/package.json'\\);console.log\\(p.version\\)\")",
+      "Bash(New-Item -ItemType File -Path \"g:/Personal Learning and projects FullStack/FrontEnd/Next.js/Assingment 8/sanitiles/app/tile/[id]/loading.tsx\" -Force)",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"created\")"
     ]
   }
 }

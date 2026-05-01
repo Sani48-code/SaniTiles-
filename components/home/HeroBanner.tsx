@@ -67,17 +67,17 @@ export default function HeroBanner() {
               href="/all-tiles"
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "bg-primary hover:bg-primary/90 text-primary-foreground"
+                "bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-12"
               )}
             >
               Explore Collection
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight size={20} className="ml-2" />
             </Link>
             <Link
               href="/all-tiles?featured=true"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent"
+                "border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent text-base px-8 h-12"
               )}
             >
               Featured Tiles

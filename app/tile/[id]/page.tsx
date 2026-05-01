@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { getTileById } from "@/lib/tiles-data";
+import TileImageGallery from "@/components/tiles/TileImageGallery";
 
 interface TilePageProps {
   params: Promise<{ id: string }>;
@@ -20,121 +19,119 @@ export async function generateMetadata({ params }: TilePageProps): Promise<Metad
   return { title: tile.title, description: tile.description };
 }
 
+const TAG_COLORS = ["default", "secondary", "outline"] as const;
+
 export default async function TilePage({ params }: TilePageProps) {
   const { id } = await params;
   const tile = getTileById(id);
   if (!tile) notFound();
 
-  return (
-    <div className="container mx-auto px-4 py-10 md:px-6 max-w-7xl">
-      <Link
-        href="/all-tiles"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to All Tiles
-      </Link>
+  const images = [tile.image];
 
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-          <Image
-            src={tile.image}
-            alt={tile.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-          />
-          {tile.featured && (
-            <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
-              Featured
+  return (
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-64px)]">
+      {/* LEFT — sticky image column */}
+      <div className="lg:w-1/2 lg:sticky lg:top-16 lg:self-start lg:h-[calc(100vh-64px)] flex flex-col">
+        {/* Back link */}
+        <div className="px-6 pt-5 pb-3 shrink-0">
+          <Link
+            href="/all-tiles"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Gallery
+          </Link>
+        </div>
+
+        {/* Image gallery fills remaining height */}
+        <div className="flex-1 overflow-hidden">
+          <TileImageGallery images={images} title={tile.title} />
+        </div>
+      </div>
+
+      {/* RIGHT — info column */}
+      <div className="lg:w-1/2 p-8 overflow-y-auto">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-xs text-muted-foreground mb-6">
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <Separator orientation="vertical" className="h-3" />
+          <Link href="/all-tiles" className="hover:text-primary transition-colors">All Tiles</Link>
+          <Separator orientation="vertical" className="h-3" />
+          <span className="text-foreground font-medium truncate">{tile.title}</span>
+        </nav>
+
+        {/* Title */}
+        <h1 className="text-2xl font-bold text-secondary mb-4">{tile.title}</h1>
+
+        {/* Price row */}
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <span
+              className="text-[28px] font-bold leading-none"
+              style={{ color: "#C1572B" }}
+            >
+              {tile.currency}&nbsp;${tile.price}
+            </span>
+            <span className="text-sm text-muted-foreground ml-2">per m²</span>
+          </div>
+          {tile.inStock ? (
+            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
+              In Stock
             </Badge>
-          )}
-          {!tile.inStock && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
-              <Badge variant="secondary" className="text-sm px-4 py-1">
-                Out of Stock
-              </Badge>
-            </div>
+          ) : (
+            <Badge variant="secondary" className="bg-red-100 text-red-600 hover:bg-red-100">
+              Out of Stock
+            </Badge>
           )}
         </div>
 
-        {/* Details */}
-        <div className="flex flex-col">
-          <Badge variant="outline" className="capitalize w-fit mb-3">
-            {tile.category}
-          </Badge>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {tile.tags.map((tag, i) => (
+            <Badge
+              key={tag}
+              variant={TAG_COLORS[i % TAG_COLORS.length]}
+              className="capitalize text-xs"
+            >
+              {tag}
+            </Badge>
+          ))}
+        </div>
 
-          <h1 className="text-3xl font-bold text-secondary mb-1">{tile.title}</h1>
-          <p className="text-sm text-muted-foreground mb-4">by {tile.creator}</p>
+        {/* Details table */}
+        <div className="divide-y divide-border/50 mb-6 rounded-xl border border-border/50 overflow-hidden">
+          {[
+            ["Material", tile.material],
+            ["Dimensions", tile.dimensions],
+            ["Category", tile.category],
+            ["Creator", tile.creator],
+          ].map(([label, value]) => (
+            <div key={label} className="flex items-center px-4 py-3">
+              <dt className="w-1/3 text-xs font-medium uppercase tracking-wider text-muted-foreground shrink-0">
+                {label}
+              </dt>
+              <dd className="text-sm font-semibold text-foreground capitalize">{value}</dd>
+            </div>
+          ))}
+        </div>
 
-          <p className="text-3xl font-bold text-primary mb-6">
-            {tile.currency} ${tile.price}
-            <span className="text-sm font-normal text-muted-foreground ml-1">/ m²</span>
-          </p>
+        {/* Description */}
+        <p className="text-muted-foreground leading-relaxed text-sm mb-8">
+          {tile.description}
+        </p>
 
-          <p className="text-muted-foreground leading-relaxed mb-6">{tile.description}</p>
-
-          <Separator className="mb-6" />
-
-          <dl className="grid grid-cols-2 gap-4 text-sm mb-6">
-            {[
-              ["Material", tile.material],
-              ["Dimensions", tile.dimensions],
-              ["Category", tile.category],
-              ["Creator", tile.creator],
-              ["ID", tile.id],
-              ["In Stock", tile.inStock ? "Yes" : "No"],
-            ].map(([label, value]) => (
-              <div key={label as string}>
-                <dt className="text-muted-foreground">{label}</dt>
-                <dd className="font-medium capitalize">{value as string}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="flex flex-wrap gap-2 mb-8">
-            {tile.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          <div className="flex gap-3 mt-auto">
-            {tile.inStock ? (
-              <>
-                <button
-                  className={cn(
-                    buttonVariants(),
-                    "flex-1 bg-primary hover:bg-primary/90"
-                  )}
-                >
-                  Request Sample
-                </button>
-                <button
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "flex-1 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
-                  )}
-                >
-                  Get Quote
-                </button>
-              </>
-            ) : (
-              <button
-                disabled
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "flex-1 cursor-not-allowed opacity-50"
-                )}
-              >
-                <Package className="mr-2 h-4 w-4" />
-                Out of Stock
-              </button>
-            )}
-          </div>
+        {/* Action buttons */}
+        <div className="flex gap-3 mt-6">
+          <Button
+            className="flex-1 bg-primary hover:bg-primary/90"
+            disabled={!tile.inStock}
+          >
+            Add to Wishlist
+          </Button>
+          <Button variant="ghost" className="gap-2">
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
         </div>
       </div>
     </div>

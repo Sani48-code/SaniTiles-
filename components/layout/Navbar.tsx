@@ -18,12 +18,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuLink,
-} from "@/components/ui/navigation-menu";
 import { authClient } from "@/lib/auth-client";
 
 const NAV_LINKS = [
@@ -34,14 +28,7 @@ const NAV_LINKS = [
 
 function TileLogoIcon() {
   return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden="true"
-    >
-      {/* four-quadrant tile icon */}
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
       <rect width="12" height="12" x="1" y="1" rx="2" fill="#C1572B" />
       <rect width="12" height="12" x="15" y="1" rx="2" fill="#C1572B" opacity="0.75" />
       <rect width="12" height="12" x="1" y="15" rx="2" fill="#C1572B" opacity="0.75" />
@@ -76,46 +63,37 @@ export default function Navbar() {
         {/* ── LEFT: Logo ───────────────────────────────────── */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <TileLogoIcon />
-          <span
-            className="text-xl font-semibold tracking-tight"
-            style={{ color: "#C1572B" }}
-          >
+          <span className="text-xl font-semibold tracking-tight" style={{ color: "#C1572B" }}>
             SaniTiles
           </span>
         </Link>
 
-        {/* ── CENTER: NavigationMenu (desktop) ─────────────── */}
-        <nav className="hidden md:flex items-center">
-          <NavigationMenu>
-            <NavigationMenuList className="gap-1">
-              {NAV_LINKS.map(({ href, label }) => {
-                const isActive =
-                  href === "/" ? pathname === "/" : pathname.startsWith(href);
-                return (
-                  <NavigationMenuItem key={href}>
-                    <NavigationMenuLink
-                      render={<Link href={href} />}
-                      active={isActive}
-                      className={cn(
-                        "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                        isActive
-                          ? "text-primary underline underline-offset-4 decoration-primary/60"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      )}
-                    >
-                      {label}
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
+        {/* ── CENTER: Nav links (desktop) — plain Links, no NavigationMenu ── */}
+        <nav className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map(({ href, label }, index) => {
+            const isActive =
+              href === "/" ? pathname === "/" : pathname.startsWith(href);
+            return (
+              <Link
+                key={`nav-${label}-${index}`}
+                href={href}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-base font-medium transition-colors",
+                  isActive
+                    ? "text-primary underline underline-offset-4 decoration-primary/60"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* ── RIGHT: Auth actions (desktop) ────────────────── */}
         <div className="hidden md:flex items-center gap-2">
           {isPending ? (
-            <div className="h-8 w-20 rounded-lg bg-muted animate-pulse" />
+            <div className="h-9 w-24 rounded-lg bg-muted animate-pulse" />
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -157,15 +135,18 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className={buttonVariants({ variant: "outline", size: "sm" })}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-9 text-sm"
+                )}
               >
                 Login
               </Link>
               <Link
                 href="/register"
                 className={cn(
-                  buttonVariants({ size: "sm" }),
-                  "bg-primary hover:bg-primary/90 text-primary-foreground"
+                  buttonVariants(),
+                  "h-9 text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
                 )}
               >
                 Get Started
@@ -183,7 +164,7 @@ export default function Navbar() {
             )}
             aria-label="Open navigation menu"
           >
-            <Menu className="h-5 w-5" />
+            <Menu size={24} />
           </SheetTrigger>
           <SheetContent side="right" className="w-72 pt-10 px-6">
             <Link href="/" className="flex items-center gap-2 mb-8">
@@ -194,15 +175,15 @@ export default function Navbar() {
             </Link>
 
             <nav className="flex flex-col gap-1 mb-8">
-              {NAV_LINKS.map(({ href, label }) => {
+              {NAV_LINKS.map(({ href, label }, index) => {
                 const isActive =
                   href === "/" ? pathname === "/" : pathname.startsWith(href);
                 return (
                   <Link
-                    key={href}
+                    key={`mobile-nav-${label}-${index}`}
                     href={href}
                     className={cn(
-                      "px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                      "px-3 py-2.5 rounded-lg text-base font-medium transition-colors",
                       isActive
                         ? "bg-primary/10 text-primary font-semibold"
                         : "text-foreground hover:bg-muted"
