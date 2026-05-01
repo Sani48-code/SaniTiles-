@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getTileById } from "@/lib/tiles-data";
+import { getTileById, getTilesByCategory } from "@/lib/tiles-data";
 import TileImageGallery from "@/components/tiles/TileImageGallery";
+import TileDetailActions from "@/components/tiles/TileDetailActions";
 
 interface TilePageProps {
   params: Promise<{ id: string }>;
@@ -26,7 +26,9 @@ export default async function TilePage({ params }: TilePageProps) {
   const tile = getTileById(id);
   if (!tile) notFound();
 
-  const images = [tile.image];
+  const similarTiles = getTilesByCategory(tile.category)
+    .filter((t) => t.id !== tile.id)
+    .slice(0, 3);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-64px)]">
@@ -45,7 +47,7 @@ export default async function TilePage({ params }: TilePageProps) {
 
         {/* Image gallery fills remaining height */}
         <div className="flex-1 overflow-hidden">
-          <TileImageGallery images={images} title={tile.title} />
+          <TileImageGallery images={[tile.image]} title={tile.title} />
         </div>
       </div>
 
@@ -106,33 +108,20 @@ export default async function TilePage({ params }: TilePageProps) {
             ["Category", tile.category],
             ["Creator", tile.creator],
           ].map(([label, value]) => (
-            <div key={label} className="flex items-center px-4 py-3">
-              <dt className="w-1/3 text-xs font-medium uppercase tracking-wider text-muted-foreground shrink-0">
-                {label}
-              </dt>
-              <dd className="text-sm font-semibold text-foreground capitalize">{value}</dd>
+            <div key={label} className="flex items-center justify-between px-4 py-3">
+              <dt className="text-sm text-muted-foreground">{label}</dt>
+              <dd className="text-sm font-semibold text-foreground capitalize text-right">{value}</dd>
             </div>
           ))}
         </div>
 
         {/* Description */}
-        <p className="text-muted-foreground leading-relaxed text-sm mb-8">
+        <p className="text-muted-foreground leading-relaxed text-sm mb-6">
           {tile.description}
         </p>
 
-        {/* Action buttons */}
-        <div className="flex gap-3 mt-6">
-          <Button
-            className="flex-1 bg-primary hover:bg-primary/90"
-            disabled={!tile.inStock}
-          >
-            Add to Wishlist
-          </Button>
-          <Button variant="ghost" className="gap-2">
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
-        </div>
+        {/* Client-side actions: quantity, wishlist, share, similar tiles */}
+        <TileDetailActions tile={tile} similarTiles={similarTiles} />
       </div>
     </div>
   );

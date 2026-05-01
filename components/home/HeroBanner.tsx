@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getFeaturedTiles } from "@/lib/tiles-data";
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 32 },
@@ -17,6 +19,10 @@ const STATS = [
   { value: "200+", label: "Tile Designs" },
   { value: "6", label: "Top Creators" },
 ];
+
+const featuredImages = getFeaturedTiles()
+  .slice(0, 4)
+  .map((t) => t.image);
 
 export default function HeroBanner() {
   return (
@@ -96,8 +102,31 @@ export default function HeroBanner() {
         </div>
       </div>
 
+      {/* Decorative 2×2 tile image grid — desktop only */}
+      {featuredImages.length >= 4 && (
+        <div
+          className="absolute right-12 xl:right-20 top-1/2 hidden lg:grid grid-cols-2 gap-3 pointer-events-none"
+          style={{ transform: "translateY(-50%) rotate(6deg)" }}
+        >
+          {featuredImages.map((src, i) => (
+            <div
+              key={i}
+              className="relative w-36 h-36 xl:w-44 xl:h-44 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              <Image
+                src={src}
+                alt="Featured tile"
+                fill
+                className="object-cover"
+                sizes="176px"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Bottom accent line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-linear-to-r from-primary via-accent to-primary/30" />
+      <div className="absolute bottom-0 left-0 right-0 h-0.75 bg-linear-to-r from-primary via-accent to-primary/30" />
     </section>
   );
 }
