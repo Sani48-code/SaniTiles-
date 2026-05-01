@@ -148,11 +148,7 @@ sanitiles/
 ---
 
 ## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your@email.com
-
+Sani
 ---
 
 > Built with ❤️ as part of a web development assignment.
